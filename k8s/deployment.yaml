@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: todo-api
-          image: seojieun/todo-api:latest
+          image: seojieun/todo-api:5
           ports:
             - containerPort: 8000
           livenessProbe:
