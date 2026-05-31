@@ -39,13 +39,15 @@ pipeline {
 
         stage('Commit & Push Manifest') {
             steps {
-                sh """
-                    git config user.email "jenkins@ci.local"
-                    git config user.name "Jenkins CI"
-                    git add k8s/deployment.yaml
-                    git commit -m "chore: update image tag to ${IMAGE_TAG}"
-                    git push origin main
-                """
+                withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                    sh '''
+                        git config user.email "jenkins@ci.local"
+                        git config user.name "Jenkins CI"
+                        git add k8s/deployment.yaml
+                        git commit -m "chore: update image tag to ${IMAGE_TAG} [ci skip]" || echo "no manifest change to commit"
+                        git push https://${GIT_USER}:${GIT_TOKEN}@github.com/maiteun/argocd-toy-project.git HEAD:main
+                    '''
+                }
             }
         }
     }
